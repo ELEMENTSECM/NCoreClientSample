@@ -19,8 +19,8 @@ namespace NCoreClientSample
         private const string DocumentServiceAddress = "services/documents/v2/DocumentService.svc";
         private const string FunctionServiceAddressV2 = "Services/Functions/V2/FunctionsService.svc";
 
-        private const string ObjectModelServiceAddress = "services/objectmodel/v3/no/ObjectModelService.svc"; //used with package/namespace Gecko.NCore.Client.ObjectModel.V3.No
-        private const string ObjectModelServiceAddress = "services/objectmodel/v3/en/ObjectModelService.svc"; //used with package/namespace Gecko.NCore.Client.ObjectModel.V3.En
+        private const string ObjectModelServiceAddressNO = "services/objectmodel/v3/no/ObjectModelService.svc"; //used with package/namespace Gecko.NCore.Client.ObjectModel.V3.No
+        private const string ObjectModelServiceAddressEN = "services/objectmodel/v3/en/ObjectModelService.svc"; //used with package/namespace Gecko.NCore.Client.ObjectModel.V3.En
 
         public NCoreFactory(ILogger<NCoreFactory> logger, IOptions<NCoreSettings> ncoreSettings)
         {
