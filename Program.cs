@@ -1,16 +1,15 @@
-﻿using Gecko.NCore.Client.Querying;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System;
 using System.Xml;
-using Gecko.NCore.Client.ObjectModel.V3.No;
 using Serilog.Core;
 using Gecko.NCore.Client;
+using Gecko.NCore.Client.Querying;
+using Gecko.NCore.Client.ObjectModel.V3.No;
 using Gecko.NCore.Client.ObjectModel.V3.En;
-using System;
-//using Gecko.NCore.Client.ObjectModel.V3.En;
 
 
 namespace NCoreClientSample
@@ -41,6 +40,26 @@ namespace NCoreClientSample
             var nCoreFactory = host.Services.GetRequiredService<NCoreFactory>();
             #endregion
 
+			#region Example: using the English namespace. I.e. Journalpost = RegistryEntry
+			using (var contextEN = nCoreFactory.Create(lang:NCoreClientLanguage.EN))
+            {
+                var openedPostType = contextEN.Query<LogEvent>().Where(x => x.EventType == "Delivery Opened By Receiver").FirstOrDefault();
+                int jpId = 5190;
+				var jpLogs = contextEN.Query<LogInfo>().Where(x => x.DatabaseTable == "JOURNPOST" && x.PrimaryKey0 == jpId.ToString() && x.EventType == openedPostType.Id).OrderByDescending(x => x.Id).ToList();
+                
+                foreach (var jpLog in jpLogs)
+                {
+					var leseTidspunkt = jpLog.Time;
+                    //jpLog.Text example: JournalpostId: 5190. SVARUT - fikk status LEST. Til: + OLA NORMANN - Åpnet av mottaker. 
+                    //hent NAVN fra logg
+					var name = jpLog.Text.Split('+')[1].Replace("- Åpnet av mottaker.","").Trim(); 
+					//hent mottaker basert på NAVN
+                    var mot = contextEN.Query<SenderRecipient>().Where(x => x.RegistryEntryId == jpId && x.Name == name && x.SendingStatusId == "Å").FirstOrDefault();
+                }
+            }
+            #endregion
+
+            //Norweigan namespace:
             using (var context = nCoreFactory.Create())
             {
 

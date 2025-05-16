@@ -6,7 +6,11 @@ using Gecko.NCore.Client.ObjectModel;
 
 namespace NCoreClientSample
 {
-
+    public enum NCoreClientLanguage
+    {
+        NO,
+        EN
+    }
     public class NCoreFactory
     {
         private readonly ILogger _logger;
@@ -16,7 +20,7 @@ namespace NCoreClientSample
         private const string FunctionServiceAddressV2 = "Services/Functions/V2/FunctionsService.svc";
 
         private const string ObjectModelServiceAddress = "services/objectmodel/v3/no/ObjectModelService.svc"; //used with package/namespace Gecko.NCore.Client.ObjectModel.V3.No
-        //private const string ObjectModelServiceAddress = "services/objectmodel/v3/en/ObjectModelService.svc"; //used with package/namespace Gecko.NCore.Client.ObjectModel.V3.En
+        private const string ObjectModelServiceAddress = "services/objectmodel/v3/en/ObjectModelService.svc"; //used with package/namespace Gecko.NCore.Client.ObjectModel.V3.En
 
         public NCoreFactory(ILogger<NCoreFactory> logger, IOptions<NCoreSettings> ncoreSettings)
         {
@@ -24,7 +28,7 @@ namespace NCoreClientSample
             NCoreSettings = ncoreSettings?.Value;
         }
 
-        public IEphorteContext Create()
+        public IEphorteContext Create(NCoreClientLanguage lang = NCoreClientLanguage.NO)
         {
 
             var ephorteContextIdentity = new EphorteContextIdentity
@@ -39,10 +43,10 @@ namespace NCoreClientSample
             var documentsAdapter = CreateAdapter(DocumentServiceAddress, clientSetting => new Gecko.NCore.Client.Documents.V2.DocumentsAdapter(ephorteContextIdentity, clientSetting));
             var functionsAdapter = CreateAdapter(FunctionServiceAddressV2, clientSetting => new Gecko.NCore.Client.Functions.V2.AsyncFunctionsAdapter(ephorteContextIdentity, clientSetting));
             IObjectModelAdapter objectModelAdapter;
-            if (ObjectModelServiceAddress.ToLower().Contains("/no/"))
-                objectModelAdapter = CreateAdapter(ObjectModelServiceAddress, clientSetting => new Gecko.NCore.Client.ObjectModel.V3.No.AsyncObjectModelAdapterV3No(ephorteContextIdentity, clientSetting));
+            if (lang == NCoreClientLanguage.NO)
+                objectModelAdapter = CreateAdapter(ObjectModelServiceAddressNO, clientSetting => new Gecko.NCore.Client.ObjectModel.V3.No.AsyncObjectModelAdapterV3No(ephorteContextIdentity, clientSetting));
             else
-                objectModelAdapter = CreateAdapter(ObjectModelServiceAddress, clientSetting => new Gecko.NCore.Client.ObjectModel.V3.En.AsyncObjectModelAdapterV3En(ephorteContextIdentity, clientSetting));
+                objectModelAdapter = CreateAdapter(ObjectModelServiceAddressEN, clientSetting => new Gecko.NCore.Client.ObjectModel.V3.En.AsyncObjectModelAdapterV3En(ephorteContextIdentity, clientSetting));
             
 
             return new EphorteContext(objectModelAdapter, functionsAdapter, documentsAdapter: documentsAdapter, documentsAdapterWithDatabase: null, metadataAdapter: null);
